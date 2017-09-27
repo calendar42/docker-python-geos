@@ -11,14 +11,12 @@ ENV GEOS http://download.osgeo.org/geos/geos-3.6.2.tar.bz2
 #built by docker.io, so reducing to 1. increase to match build server processor count as needed
 ENV PROCESSOR_COUNT 1
 
-WORKDIR /install-postgis
+ADD $GEOS /install-postgis/
 
-WORKDIR /install-postgis/geos
-ADD $GEOS /install-postgis/geos.tar.bz2
-RUN tar xf /install-postgis/geos.tar.bz2 -C /install-postgis/geos --strip-components=1
-RUN ./configure && make -j $PROCESSOR_COUNT && make install
+WORKDIR /install-postgis/geos-3.6.2/
+
+RUN ./configure --enable-python && make -j $PROCESSOR_COUNT && make install
 RUN ldconfig
-WORKDIR /install-postgis
-RUN test -x geos
+RUN geos-config --cflags
 
 RUN apt-get update && apt-get install -y binutils libproj-dev gdal-bin 
