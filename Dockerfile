@@ -7,15 +7,11 @@ ENV PYTHONUNBUFFERED 1
 
 ENV GEOS http://download.osgeo.org/geos/geos-3.6.2.tar.bz2
 
-#TODO make PROCESSOR_COUNT dynamic
-#built by docker.io, so reducing to 1. increase to match build server processor count as needed
-ENV PROCESSOR_COUNT 1
-
 ADD $GEOS /install-postgis/
 
 WORKDIR /install-postgis/geos-3.6.2/
 
-RUN ./configure --enable-python && make -j $PROCESSOR_COUNT && make install
+RUN ./configure --enable-python && make -j $(nproc) && make install
 RUN ldconfig
 RUN geos-config --cflags
 
